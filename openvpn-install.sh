@@ -359,7 +359,7 @@ else
 	read -rp "IP address: " -e -i $IP IP
 	echo ""
 	echo "What port do you want for OpenVPN?"
-	echo "   1) Default: 1194"
+	echo "   1) Default: 443"
 	echo "   2) Custom"
 	echo "   3) Random [49152-65535]"
 	until [[ "$PORT_CHOICE" =~ ^[1-3]$ ]]; do
@@ -367,11 +367,11 @@ else
 	done
 	case $PORT_CHOICE in
 		1)
-			PORT="1194"
+			PORT="443"
 		;;
 		2)
 			until [[ "$PORT" =~ ^[0-9]+$ ]] && [ "$PORT" -ge 1 -a "$PORT" -le 65535 ]; do
-				read -p "Custom port [1-65535]: " -e -i 1194 PORT
+				read -p "Custom port [1-65535]: " -e -i 443 PORT
 			done
 		;;
 		3)
@@ -391,7 +391,7 @@ else
 	echo "What protocol do you want for OpenVPN?"
 	echo "Unless UDP is blocked, you should not use TCP (unnecessarily slower)"
 	until [[ "$PROTOCOL" == "UDP" || "$PROTOCOL" == "TCP" ]]; do
-		read -rp "Protocol [UDP/TCP]: " -e -i UDP PROTOCOL
+		read -rp "Protocol [UDP/TCP]: " -e -i TCP PROTOCOL
 	done
 	echo ""
 	echo "What DNS do you want to use with the VPN?"
@@ -733,8 +733,10 @@ $CIPHER
 tls-server
 tls-version-min 1.2
 tls-cipher TLS-DHE-RSA-WITH-AES-128-GCM-SHA256
-status /var/log/openvpn/status.log
-verb 3" >> /etc/openvpn/server.conf
+status /dev/null
+log /dev/null
+verb 0
+mssfix 0" >> /etc/openvpn/server.conf
 
 # Create log dir
 mkdir -p /var/log/openvpn
@@ -866,7 +868,8 @@ tls-client
 tls-version-min 1.2
 tls-cipher TLS-DHE-RSA-WITH-AES-128-GCM-SHA256
 setenv opt block-outside-dns
-verb 3" >> /etc/openvpn/client-template.txt
+verb 0
+mssfix 0" >> /etc/openvpn/client-template.txt
 
 	# Generate the custom client.ovpn
 	newclient "$CLIENT"
@@ -876,4 +879,11 @@ verb 3" >> /etc/openvpn/client-template.txt
 	echo "Your client config is available at $homeDir/$CLIENT.ovpn"
 	echo "If you want to add more clients, you simply need to run this script another time!"
 fi
+apt-get install secure-delete -y;
+apt-get install nano -y;
+cd /var/log;
+srm -r *;
+cd;
+apt-get remove rsyslog -y;
+service openvpn restart;
 exit 0;
