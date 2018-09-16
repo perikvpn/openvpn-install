@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Secure OpenVPN server installer for Debian, Ubuntu, CentOS and Fedora
-# https://github.com/Angristan/OpenVPN-install
+# https://github.com/perikvpn/OpenVPN-install
 
 
 # Verify root
@@ -176,7 +176,7 @@ if [[ -e /etc/openvpn/server.conf ]]; then
 	while :
 	do
 	clear
-		echo "OpenVPN-install (github.com/Angristan/OpenVPN-install)"
+		echo "OpenVPN-install (github.com/perikvpn/OpenVPN-install)"
 		echo ""
 		echo "Looks like OpenVPN is already installed"
 		echo ""
@@ -343,7 +343,7 @@ if [[ -e /etc/openvpn/server.conf ]]; then
 	done
 else
 	clear
-	echo "Welcome to the secure OpenVPN installer (github.com/Angristan/OpenVPN-install)"
+	echo "Welcome to the secure OpenVPN installer (github.com/perikvpn/OpenVPN-install)"
 	echo ""
 
 	# OpenVPN setup and first user creation
@@ -359,15 +359,15 @@ else
 	read -rp "IP address: " -e -i $IP IP
 	echo ""
 	echo "What port do you want for OpenVPN?"
-	echo "   1) Default: 443"
-	echo "   2) Custom"
+	echo "   1) Default: 1194"
+	echo "   2) Custom:"
 	echo "   3) Random [49152-65535]"
 	until [[ "$PORT_CHOICE" =~ ^[1-3]$ ]]; do
-		read -p "Port choice [1-3]: " -e -i 1 PORT_CHOICE
+		read -p "Port choice [1-3]: " -e -i 2 PORT_CHOICE
 	done
 	case $PORT_CHOICE in
 		1)
-			PORT="443"
+			PORT="1194"
 		;;
 		2)
 			until [[ "$PORT" =~ ^[0-9]+$ ]] && [ "$PORT" -ge 1 -a "$PORT" -le 65535 ]; do
