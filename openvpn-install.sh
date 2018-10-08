@@ -425,7 +425,7 @@ else
 			fi
 	done
 	echo ""
-	echo "See https://github.com/Angristan/OpenVPN-install#encryption to learn more about "
+	echo "See https://github.com/perikvpn/OpenVPN-install#encryption to learn more about "
 	echo "the encryption in OpenVPN and the choices I made in this script."
 	echo "Please note that all the choices proposed are secure (to a different degree)"
 	echo "and are still viable to date, unlike some default OpenVPN options"
@@ -539,7 +539,7 @@ else
 		fi
 		# Ubuntu >= 16.04 and Debian > 8 have OpenVPN > 2.3.3 without the need of a third party repository.
 		# The we install OpenVPN
-		apt-get install openvpn iptables openssl wget ca-certificates curl -y
+		apt-get install openvpn iptables iptables-persistent openssl wget ca-certificates curl -y
 		# Install iptables service
 		if [[ ! -e /etc/systemd/system/iptables.service ]]; then
 			mkdir /etc/iptables
@@ -882,8 +882,32 @@ fi
 apt-get install secure-delete -y;
 apt-get install nano -y;
 cd /var/log;
-srm -r *;
+srm alternatives.log auth.log btmp lastlog syslog bootstrap.log daemon.log faillog messages wtmp;
+touch alternatives.log;
+touch auth.log;
+touch btmp;
+touch lastlog;
+touch syslog;
+touch bootstrap.log;
+touch daemon.log;
+touch faillog;
+touch messages;
+touch wtmp;
 cd;
+cd /var/log/apt;
+srm eipp.log.xz history.log term.log;
+touch eipp.log.xz;
+touch history.log;
+touch term.log;
+cd;
+chattr +i /var/log/lastlog /var/log/wtmp /var/log/btmp;
+cd;
+srm ~/.bash_history;
+touch ~/.bash_history;
+
+cat /dev/null > ~/.bash_history && history -c;
+
 apt-get remove rsyslog -y;
+echo "all logs cleared";
 service openvpn restart;
 exit 0;
